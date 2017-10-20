@@ -1,0 +1,29 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "sourceMap": true,
+      "target": "es6",
+      "module": "commonjs",
+      "declaration": true,
+      "noImplicitAny": false,
+      "removeComments": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "moduleResolution": "node",
+      "lib": ["es2017", "dom"],
+      "baseUrl": "./lib",
+      "outDir": "./build"
+    },
+    "exclude": [
+      "./build",
+      "node_modules"
+    ],
+    "filesGlob": [
+      "./lib/**/*.ts",
+      "./test/**/*.ts"
+    ],
+    "atom": {
+      "rewriteTsconfig": false
+    }
+  }
+  

@@ -7,5 +7,9 @@ npm-debug.log
 *~
 database.sqlite
 .nyc_output
+.history
+build/
+.vscode/
+.directory
 coverage/
 coverage-*/

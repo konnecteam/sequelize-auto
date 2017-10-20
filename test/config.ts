@@ -1,21 +1,21 @@
 
-var path = require('path');
+const path = require('path');
 
 module.exports = {
   directory: path.join(__dirname, 'models'),
-  username: "root",
+  username: 'root',
   password: null,
   database: 'sequelize_auto_test',
   host: '127.0.0.1',
   pool: { maxConnections: 5, maxIdleTime: 30000},
 
-  rand: function() {
-    return parseInt(Math.random() * 999, 10)
+  rand: () => {
+    return parseInt(Math.random() * 999 as any, 10);
   },
 
   //make maxIdleTime small so that tests exit promptly
   mysql: {
-    username: "root",
+    username: 'root',
     password: null,
     database: 'sequelize_auto_test',
     host: '127.0.0.1',
@@ -24,11 +24,11 @@ module.exports = {
   },
 
   sqlite: {
-    username: "foo",
+    username: 'foo',
     password: null,
     host: '127.0.0.1',
-    database: path.join(__dirname, "database.sqlite"),
-    storage: path.join(__dirname, "database.sqlite")
+    database: path.join(__dirname, 'database.sqlite'),
+    storage: path.join(__dirname, 'database.sqlite')
   },
 
   postgres: {
@@ -42,8 +42,8 @@ module.exports = {
   mssql: {
     database: 'sequelize_auto_test',
     username: 'sa',
-    password: 'Password12!',
-    host: '127.0.0.1',
+    password: 'aqw123zsx!',
+    host: 'vmudocker',
     port: 1433
   }
-}
+};

@@ -1,26 +1,27 @@
+import { AutoSequelize } from '../lib/index';
+'use strict';
+const exec = require('child_process').exec;
+const path = require('path');
+const chai = require('chai');
+const expect = chai.expect;
+const helpers = require('./helpers');
+const dialect = helpers.getTestDialect();
+const testConfig = require('./config');
+const _ = require('lodash');
+const lib = require('../index');
 
-var exec = require('child_process').exec;
-var path = require('path');
-var chai = require('chai');
-var expect = chai.expect;
-var helpers = require('./helpers');
-var dialect = helpers.getTestDialect();
-var testConfig = require('./config');
-var _ = helpers.Sequelize.Utils._;
-var lib = require('../index');
-
-describe(helpers.getTestDialectTeaser("sequelize-auto build"), function() {
+describe(helpers.getTestDialectTeaser('sequelize-auto build'), function() {
   after(function(done) {
     helpers.clearDatabase(this.sequelize, done);
   });
 
   before(function(done) {
-    var self = this
+    const self = this;
 
     helpers.initTests({
-      dialect: dialect,
-      beforeComplete: function(sequelize) {
-        self.sequelize = sequelize
+      dialect,
+      beforeComplete: sequelize => {
+        self.sequelize = sequelize,
         self.User      = self.sequelize.define('User', {
           username:  { type: helpers.Sequelize.STRING },
           touchedAt: { type: helpers.Sequelize.DATE, defaultValue: helpers.Sequelize.NOW },
@@ -45,32 +46,32 @@ describe(helpers.getTestDialectTeaser("sequelize-auto build"), function() {
             type: helpers.Sequelize.BOOLEAN,
             defaultValue: true
           }
-        })
+        }),
 
         self.HistoryLog = self.sequelize.define('HistoryLog', {
           someText:  { type: helpers.Sequelize.STRING },
           aNumber:   { type: helpers.Sequelize.INTEGER },
           aRandomId: { type: helpers.Sequelize.INTEGER }
-        })
+        }),
 
         self.ParanoidUser = self.sequelize.define('ParanoidUser', {
           username: { type: helpers.Sequelize.STRING }
         }, {
           paranoid: true
-        })
+        }),
 
-        self.ParanoidUser.belongsTo(self.User)
+        self.ParanoidUser.belongsTo(self.User);
       },
-      onComplete: function() {
-        self.sequelize.sync().then(function () {
+      onComplete: () => {
+        self.sequelize.sync().then(() => {
           done();
         }, done);
       }
     });
   });
 
-  var setupModels = function(self, callback) {
-    var options = _.extend({
+  const setupModels = (self, callback) => {
+    const options = _.extend({
       spaces: true,
       indentation: 2,
       logging: false,
@@ -78,23 +79,24 @@ describe(helpers.getTestDialectTeaser("sequelize-auto build"), function() {
       dialect: helpers.getTestDialect()
     }, testConfig[helpers.getTestDialect()], self.sequelize.config);
 
-    var autoSequelize = new lib(self.sequelize.config.database, self.sequelize.config.username, self.sequelize.config.password, options);
+    const autoSequelize = new lib.AutoSequelize(self.sequelize.config.database, self.sequelize.config.username, self.sequelize.config.password, options);
 
-    autoSequelize.build(function (err) {
+    autoSequelize.build(err => {
       callback(err, autoSequelize);
     });
-  }
+  };
 
-  describe("should be able to build", function() {
-    it("the models", function(done) {
-      var self = this;
+  // tslint:disable:no-unused-expression
+  describe('should be able to build', function() {
+    it('the models', function(done) {
+      const self = this;
 
       setupModels(self, function(err, autoSequelize) {
         expect(err).to.be.null;
         expect(autoSequelize).to.include.keys(['tables', 'foreignKeys']);
         expect(autoSequelize.tables).to.have.keys(['Users', 'HistoryLogs', 'ParanoidUsers']);
 
-        if (helpers.getTestDialect() === "sqlite") {
+        if (helpers.getTestDialect() === 'sqlite') {
           expect(autoSequelize.foreignKeys).to.have.keys(['ParanoidUsers']);
           expect(autoSequelize.foreignKeys.ParanoidUsers).to.include.keys(['UserId']);
         } else {
