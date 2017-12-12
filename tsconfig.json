@@ -4,7 +4,7 @@
       "sourceMap": true,
       "target": "es6",
       "module": "commonjs",
-      "declaration": true,
+      "declaration": false,
       "noImplicitAny": false,
       "removeComments": false,
       "emitDecoratorMetadata": true,
@@ -19,8 +19,7 @@
       "node_modules"
     ],
     "filesGlob": [
-      "./lib/**/*.ts",
-      "./test/**/*.ts"
+      "./lib/**/*.ts"
     ],
     "atom": {
       "rewriteTsconfig": false

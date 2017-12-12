@@ -1,6 +1,6 @@
-import { AutoSequelize } from '../lib/index';
 'use strict';
-const exec = require('child_process').exec;
+import {exec} from 'child_process';
+import { AutoSequelize } from './index';
 const path = require('path');
 const chai = require('chai');
 const expect = chai.expect;
@@ -79,7 +79,7 @@ describe(helpers.getTestDialectTeaser('sequelize-auto build'), function() {
       dialect: helpers.getTestDialect()
     }, testConfig[helpers.getTestDialect()], self.sequelize.config);
 
-    const autoSequelize = new lib.AutoSequelize(self.sequelize.config.database, self.sequelize.config.username, self.sequelize.config.password, options);
+    const autoSequelize = new AutoSequelize(self.sequelize.config.database, self.sequelize.config.username, self.sequelize.config.password, options);
 
     autoSequelize.build(err => {
       callback(err, autoSequelize);

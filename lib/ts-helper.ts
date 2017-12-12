@@ -1,6 +1,7 @@
 // put in seperate file to keep main sequelize-auto clean
 'use strict';
 
+// tslint:disable:ter-indent
 function getModelFileStart(indentation, spaces, tableName) {
     let fileStart = '/* jshint indent: ' + indentation + ' */\n';
     fileStart += '// tslint:disable\n';
@@ -69,7 +70,9 @@ function getTableDefinition(tsTableDefAttr, tableName) {
 
 // doing this in ts helper to not clutter up main index if statement
 function getMemberDefinition(spaces, fieldName, val, allowNull) {
-    if (fieldName === undefined) return '';
+    if (fieldName === undefined) {
+      return '';
+    }
     let m = '\n' + spaces + fieldName + (allowNull === true ? '?:' : ':');
 
     if (val === undefined) {
