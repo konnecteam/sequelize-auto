@@ -204,7 +204,11 @@ export class AutoSequelize {
         if (!self.options.typescript) {
           text[table] = '/* jshint indent: ' + self.options.indentation + ' */\n\n';
           text[table] += 'module.exports = function(sequelize, DataTypes) {\n';
-          text[table] += spaces + "return sequelize.define('" + tableName + "', {\n";
+          if (additionalParamsClass != null && additionalParamsClass.sequelizeDefineTableName) {
+            text[table] += spaces + "return sequelize.define('" + additionalParamsClass.sequelizeDefineTableName(tableName) + "', {\n";
+          } else {
+            text[table] += spaces + "return sequelize.define('" + tableName + "', {\n";
+          }
         } else {
           tsTableNames.push(tableName);
           text[table] = tsHelper.model.getModelFileStart(self.options.indentation, spaces, tableName);
