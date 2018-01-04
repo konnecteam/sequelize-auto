@@ -11,4 +11,6 @@ export interface IOptionalParams {
    * Function that permits the modification of the tableName for model definition
    */
   sequelizeDefineTableName : (tableName) => string;
+
+  treatReferences : (foreignKey) => string;
 }

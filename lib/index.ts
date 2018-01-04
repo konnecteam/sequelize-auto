@@ -261,7 +261,7 @@ export class AutoSequelize {
             if (attr === 'foreignKey' || attr === 'autoincrement') {
               if (isSerialKey || (attr === 'autoincrement' && self.options.dialect === 'oracle')) {
                 text[table] += spaces + spaces + spaces + 'autoIncrement: true';
-              } else if (foreignKey.isForeignKey) {
+              } else if (foreignKey.isForeignKey && (additionalParamsClass == null || additionalParamsClass != null && additionalParamsClass.treatReferences(foreignKey))) {
                 text[table] += spaces + spaces + spaces + 'references: {\n';
                 text[table] += spaces + spaces + spaces + spaces + "model: \'" + self.tables[table][field][attr].foreignSources.target_table + '\',\n';
                 text[table] += spaces + spaces + spaces + spaces + "key: \'" + self.tables[table][field][attr].foreignSources.target_column + '\'\n';
@@ -298,14 +298,21 @@ export class AutoSequelize {
                 // mssql bit fix
                 val_text = defaultVal === '((1))' ? 1 : 0;
               }
-
               if (_.isString(defaultVal)) {
                 const field_type = self.tables[table][field].type.toLowerCase();
-                if (_.endsWith(defaultVal, '()')) {
-                  val_text = "sequelize.fn('" + defaultVal.replace(/\(\)$/, '') + "')";
-                } else if (field_type.indexOf('date') === 0 || field_type.indexOf('timestamp') === 0) {
-                  if (_.includes(['current_timestamp', 'current_date', 'current_time', 'localtime', 'localtimestamp'], defaultVal.toLowerCase())) {
-                    val_text = "sequelize.literal('" + defaultVal + "')";
+                if (_.endsWith(defaultVal, '()') || _.endsWith(defaultVal, '())')) {
+                  if (field_type.indexOf('date') === 0 || field_type.indexOf('timestamp') === 0  || field_type.indexOf('datetimeoffset') === 0) {
+                    if (_.includes(['current_timestamp', 'current_date', 'current_time', 'localtime', 'localtimestamp', '(getdate())', '(sysdatetimeoffset())'], defaultVal.toLowerCase())) {
+                      val_text = 'sequelize.Sequelize.NOW';
+                    } else {
+                      val_text = "sequelize.fn('" + defaultVal.replace(/\(\)$/, '') + "')";
+                    }
+                  } else {
+                    val_text = "sequelize.fn('" + defaultVal.replace(/\(\)$/, '') + "')";
+                  }
+                } else if (field_type.indexOf('date') === 0 || field_type.indexOf('timestamp') === 0 || field_type.indexOf('datetimeoffset') === 0) {
+                  if (_.includes(['current_timestamp', 'current_date', 'current_time', 'localtime', 'localtimestamp', '(getdate())', '(sysdatetimeoffset())'], defaultVal.toLowerCase())) {
+                    val_text = 'sequelize.Sequelize.NOW';
                   } else {
                     val_text = quoteWrapper + val_text + quoteWrapper;
                   }
@@ -325,7 +332,7 @@ export class AutoSequelize {
 
                 // don't prepend N for MSSQL when building models...
                 val_text = _.trimStart(val_text, 'N');
-                text[table] += spaces + spaces + spaces + attr + ': ' + val_text;
+                text[table] += spaces + spaces + spaces + attr + ': ' + (val_text.indexOf('sequelize.Sequelize') > -1 ? val_text.substr(1, val_text.length - 2) : val_text);
               }
             } else if (attr === 'type' && self.tables[table][field][attr].indexOf('ENUM') === 0) {
               text[table] += spaces + spaces + spaces + attr + ': DataTypes.' + self.tables[table][field][attr];

@@ -3,14 +3,17 @@
 
 // tslint:disable:ter-indent
 function getModelFileStart(indentation, spaces, tableName) {
-    let fileStart = '/* jshint indent: ' + indentation + ' */\n';
-    fileStart += '// tslint:disable\n';
-    fileStart += 'import * as sequelize from \'sequelize\';\n';
-    fileStart += 'import {DataTypes} from \'sequelize\';\n';
-    fileStart += 'import {' + tableName + 'Instance, ' + tableName + 'Attribute} from \'./db\';\n\n';
-    fileStart += 'module.exports = function(sequelize: sequelize.Sequelize, DataTypes: DataTypes) {\n';
-    fileStart += spaces + 'return sequelize.define<' + tableName + 'Instance, ' + tableName + 'Attribute>(\'' + tableName + '\', {\n';
-    return fileStart;
+  if (tableName.indexOf('p_') === 0) {
+    tableName = tableName.replace('p_', '');
+  }
+  let fileStart = '/* jshint indent: ' + indentation + ' */\n';
+  fileStart += '// tslint:disable\n';
+  fileStart += 'import * as sequelize from \'sequelize\';\n';
+  fileStart += 'import {DataTypes} from \'sequelize\';\n';
+  fileStart += 'import {' + tableName + 'Instance, ' + tableName + 'Attribute} from \'./db\';\n\n';
+  fileStart += 'module.exports = function(sequelize: sequelize.Sequelize, DataTypes: DataTypes) {\n';
+  fileStart += spaces + 'return sequelize.define<' + tableName + 'Instance, ' + tableName + 'Attribute>(\'' + tableName + '\', {\n';
+  return fileStart;
 }
 
 function generateTableModels(tableNames, isSpaces, indentation) {
@@ -32,7 +35,11 @@ function generateTableModels(tableNames, isSpaces, indentation) {
     function generateInterface() {
         let fileTextOutput = 'export interface ITables {\n';
         for (let i = 0; i < tableNames.length; i++) {
-            fileTextOutput += spaces + tableNames[i] + ':def.' + tableNames[i] + 'Model;\n';
+          let tableName = tableNames[i];
+          if (tableName.indexOf('p_') === 0) {
+            tableName = tableName.replace('p_', '');
+          }
+          fileTextOutput += spaces + tableName + ':def.' + tableNames[i] + 'Model;\n';
         }
         fileTextOutput += '}\n\n';
         return fileTextOutput;
@@ -42,7 +49,11 @@ function generateTableModels(tableNames, isSpaces, indentation) {
         let fileTextOutput = 'export const getModels = function(seq:sequelize.Sequelize):ITables {\n';
         fileTextOutput += spaces + 'const tables:ITables = {\n';
         for (let i = 0; i < tableNames.length; i++) {
-            fileTextOutput += spaces + spaces + tableNames[i] + ': seq.import(path.join(__dirname, \'./' + tableNames[i] + '\')),\n';
+          let tableName = tableNames[i];
+          if (tableName.indexOf('p_') === 0) {
+            tableName = tableName.replace('p_', '');
+          }
+          fileTextOutput += spaces + spaces + tableName + ': seq.import(path.join(__dirname, \'./' + tableNames[i] + '\')),\n';
         }
         fileTextOutput += spaces + '};\n';
         fileTextOutput += spaces + 'return tables;\n';
